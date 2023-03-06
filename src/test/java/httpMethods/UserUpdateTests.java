@@ -1,11 +1,20 @@
 package httpMethods;
 
+import io.restassured.RestAssured;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pojo.User;
 
 import static io.restassured.RestAssured.given;
 
 public class UserUpdateTests {
+
+    @BeforeClass
+    public void setupConfiguration(){
+        RestAssured.baseURI  = "https://swaggerpetstore.przyklady.javastart.pl";
+        RestAssured.basePath = "v2";
+    }
+
     @Test
     public void  givenCorrectUserDataWhenFirstNameLastNameAreUpdatedThenUserDataIsUpdatedTest(){
 
@@ -21,13 +30,13 @@ public class UserUpdateTests {
         user.setUserStatus(666);
 
         given().body(user).log().all().contentType("application/json")
-                .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/user")
+                .when().post("user")
                 .then().log().all().statusCode(200);
 
         user.setFirstName("Andy");
         user.setLastName("Anderson");
         given().body(user).log().all().contentType("application/json")
-                .when().put("https://swaggerpetstore.przyklady.javastart.pl/v2/user/seconduser")
+                .when().put("user/seconduser")
                 .then().log().all().statusCode(200);
 
     }

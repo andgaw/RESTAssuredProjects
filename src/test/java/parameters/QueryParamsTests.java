@@ -1,5 +1,7 @@
 package parameters;
 
+import io.restassured.RestAssured;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pojo.Category;
 import pojo.Pet;
@@ -14,6 +16,11 @@ import static io.restassured.RestAssured.given;
 import static org.testng.Assert.assertTrue;
 
 public class QueryParamsTests {
+    @BeforeClass
+    public void setupConfiguration(){
+        RestAssured.baseURI  = "https://swaggerpetstore.przyklady.javastart.pl";
+        RestAssured.basePath = "v2";
+    }
     @Test
     public void givenExistingPetWithStatusSoldWhenGetPetWithSoldStatusThenPetWithStatusIsReturnedTest(){
         Pet gugu = new Pet();
@@ -31,11 +38,11 @@ public class QueryParamsTests {
         tag.setName("dogs-category");
 
         given().body(gugu).log().all().contentType("application/json")
-                .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
+                .when().post("pet")
                 .then().log().all().statusCode(200);
 
    Pet[] pets =   given().queryParam("status", "sold").log().all().body(gugu).contentType("application/json")
-                .when().get("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/findByStatus")
+                .when().get("pet/findByStatus")
                    .then().log().all().statusCode(200).extract().as(Pet[].class);
 
        assertTrue(pets.length > 0, "List of Pets");

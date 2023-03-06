@@ -1,6 +1,8 @@
 package httpMethods.serialization;
 
+import io.restassured.RestAssured;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pojo.Category;
 import pojo.Pet;
@@ -13,6 +15,13 @@ import static org.testng.Assert.assertEquals;
 import java.util.Collections;
 
 public class SerializationAndDeserializationTests {
+
+    @BeforeClass
+    public void setupConfiguration(){
+        RestAssured.baseURI  = "https://swaggerpetstore.przyklady.javastart.pl";
+        RestAssured.basePath = "v2";
+    }
+
     @Test
     public void givenPetWhenPostPetThenPetIsCreatedTest() {
 
@@ -33,7 +42,7 @@ public class SerializationAndDeserializationTests {
 
 
         Pet actualPet = given().log().all().body(pet).contentType("application/json")
-                .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
+                .when().post("pet")
                 .then().log().all().statusCode(200).extract().as(Pet.class);
 
         assertEquals(actualPet.getId(), pet.getId(), "Pet id");
@@ -62,14 +71,14 @@ public class SerializationAndDeserializationTests {
 
 
         Pet gugu = given().log().all().body(pet).contentType("application/json")
-                .when().post("https://swaggerpetstore.przyklady.javastart.pl/v2/pet")
+                .when().post("pet")
                 .then().log().all().statusCode(200).extract().as(Pet.class);
 
 
 
         given().log().method().log().uri()
                 .pathParam("petId", 5)
-                .when().get("https://swaggerpetstore.przyklady.javastart.pl/v2/pet/{petId}")
+                .when().get("pet/{petId}")
                 .then().log().all().statusCode(200);
         assertEquals(gugu.getName(), pet.getName(), "Name");
         assertEquals(gugu.getId(),pet.getId(),"Pet Id");
