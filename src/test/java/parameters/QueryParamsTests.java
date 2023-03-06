@@ -1,6 +1,8 @@
 package parameters;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pojo.Category;
@@ -20,6 +22,7 @@ public class QueryParamsTests {
     public void setupConfiguration(){
         RestAssured.baseURI  = "https://swaggerpetstore.przyklady.javastart.pl";
         RestAssured.basePath = "v2";
+        RestAssured.filters(new RequestLoggingFilter(),new ResponseLoggingFilter());
     }
     @Test
     public void givenExistingPetWithStatusSoldWhenGetPetWithSoldStatusThenPetWithStatusIsReturnedTest(){
@@ -37,13 +40,13 @@ public class QueryParamsTests {
         tag.setId(1);
         tag.setName("dogs-category");
 
-        given().body(gugu).log().all().contentType("application/json")
+        given().body(gugu).contentType("application/json")
                 .when().post("pet")
-                .then().log().all().statusCode(200);
+                .then().statusCode(200);
 
-   Pet[] pets =   given().queryParam("status", "sold").log().all().body(gugu).contentType("application/json")
+   Pet[] pets =   given().queryParam("status", "sold").body(gugu).contentType("application/json")
                 .when().get("pet/findByStatus")
-                   .then().log().all().statusCode(200).extract().as(Pet[].class);
+                   .then().statusCode(200).extract().as(Pet[].class);
 
        assertTrue(pets.length > 0, "List of Pets");
 

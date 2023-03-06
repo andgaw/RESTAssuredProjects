@@ -1,7 +1,8 @@
-package respponse;
+package response;
 import java.util.Map;
 import io.restassured.RestAssured;
-import io.restassured.http.Header;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeClass;
@@ -20,6 +21,8 @@ public class GettingHeadersAndCookiesTests {
     public void setupConfiguration() {
         RestAssured.baseURI = "https://swaggerpetstore.przyklady.javastart.pl";
         RestAssured.basePath = "v2";
+        RestAssured.filters(new RequestLoggingFilter(),new ResponseLoggingFilter());
+
     }
     @Test
 
@@ -39,9 +42,9 @@ public class GettingHeadersAndCookiesTests {
         pet.setTags(Collections.singletonList(tag));
         pet.setStatus("available");
 
-        Response response = given().log().all().body(pet).contentType("application/json")
+        Response response = given().body(pet).contentType("application/json")
                 .when().post("pet")
-                .then().log().all().extract().response();
+                .then().extract().response();
         int statusCode  = response.getStatusCode();
         String statusLine = response.getStatusLine();
         Headers responseHeaders  = response.getHeaders();

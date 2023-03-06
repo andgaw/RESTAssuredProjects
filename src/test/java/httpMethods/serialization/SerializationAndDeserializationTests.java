@@ -1,6 +1,8 @@
 package httpMethods.serialization;
 
 import io.restassured.RestAssured;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -20,6 +22,7 @@ public class SerializationAndDeserializationTests {
     public void setupConfiguration(){
         RestAssured.baseURI  = "https://swaggerpetstore.przyklady.javastart.pl";
         RestAssured.basePath = "v2";
+        RestAssured.filters(new RequestLoggingFilter(),new ResponseLoggingFilter());
     }
 
     @Test
@@ -41,9 +44,9 @@ public class SerializationAndDeserializationTests {
         pet.setStatus("availble");
 
 
-        Pet actualPet = given().log().all().body(pet).contentType("application/json")
+        Pet actualPet = given().body(pet).contentType("application/json")
                 .when().post("pet")
-                .then().log().all().statusCode(200).extract().as(Pet.class);
+                .then().statusCode(200).extract().as(Pet.class);
 
         assertEquals(actualPet.getId(), pet.getId(), "Pet id");
         assertEquals(actualPet.getCategory().getId(), pet.getCategory().getId(), "Category");
@@ -70,16 +73,15 @@ public class SerializationAndDeserializationTests {
         pet.setStatus("availble");
 
 
-        Pet gugu = given().log().all().body(pet).contentType("application/json")
+        Pet gugu = given().body(pet).contentType("application/json")
                 .when().post("pet")
-                .then().log().all().statusCode(200).extract().as(Pet.class);
+                .then().statusCode(200).extract().as(Pet.class);
 
 
 
-        given().log().method().log().uri()
-                .pathParam("petId", 5)
+        given().pathParam("petId", 5)
                 .when().get("pet/{petId}")
-                .then().log().all().statusCode(200);
+                .then().statusCode(200);
         assertEquals(gugu.getName(), pet.getName(), "Name");
         assertEquals(gugu.getId(),pet.getId(),"Pet Id");
         assertEquals(gugu.getPhotoUrls(),pet.getPhotoUrls(), "Pet Photo");
