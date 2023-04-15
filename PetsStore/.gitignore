@@ -1,5 +1,5 @@
 out
 .imi
-.idea
+../.idea
 *.class
 *iml
